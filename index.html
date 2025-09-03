@@ -43,7 +43,7 @@
     .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
     .btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); padding: 6px 10px; border-radius: 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
     .display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 18px; position: relative; z-index: 2; }
-    .big { font-size: clamp(48px, 12vw, 50px); font-weight: 800; line-height: 1; }
+    .big { font-size: clamp(48px, 12vw, 7px); font-weight: 400; line-height: 22; }
     .meta { color: #A020F0; font-size: 14px; margin-top: 6px; }
     #bottomDays { text-align:center; font-size:18px; color:#A020F0; margin-top:10px; }
     .particle { position: absolute; font-size: 16px; animation: floatUp 6s linear infinite; user-select: none; pointer-events: none; z-index: 0; }
@@ -106,7 +106,7 @@
       const mins = Math.floor((absMs % (1000*60*60)) / (1000*60));
       const secs = Math.floor((absMs % (1000*60)) / 1000);
 
-      daysEl.textContent = days + ' gündür biriz beraberiz';
+      
       // En altta sadece gün sayısı
       bottomDays.textContent = days + ' gündür kalplerimiz bir atıyor sevgilim - Seni Çokça Seviyorum';
     }
