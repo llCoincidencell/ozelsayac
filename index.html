@@ -47,7 +47,6 @@
     .display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 18px; position: relative; z-index: 2; }
     .big { font-size: clamp(48px, 12vw, 50px); font-weight: 800; line-height: 1; }
     .meta { color: #A020F0; font-size: 14px; margin-top: 6px; }
-    .small { font-size: 12px; color: #cbd5e1; margin-top: 8px; }
     footer { color: #cbd5e1; font-size: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.25); }
 
     /* En altta sadece geçen gün sayısı */
@@ -69,6 +68,8 @@
         <button id="modeToggle" class="btn">Mod: Geçen</button>
         <button id="saveBtn" class="btn">Kaydet</button>
         <button id="resetBtn" class="btn">Sıfırla</button>
+        <!-- Müzik kontrol butonu -->
+        <button id="musicToggle" class="btn">Müziği Durdur/Çal</button>
       </div>
     </header>
 
@@ -86,6 +87,9 @@
     </footer>
   </main>
 
+  <!-- Arka plan müziği -->
+  <audio id="bgMusic" src="https://radyonet.net/cdn/muzik/eda-baba-beni-vur-1756574482-17.mp3" autoplay loop></audio>
+
   <script>
     const targetInput = document.getElementById('target');
     const daysEl = document.getElementById('days');
@@ -95,6 +99,20 @@
     const saveBtn = document.getElementById('saveBtn');
     const resetBtn = document.getElementById('resetBtn');
     const savedSpan = document.getElementById('saved');
+
+    const bgMusic = document.getElementById('bgMusic');
+    const musicToggle = document.getElementById('musicToggle');
+
+    // Müzik buton işlevi
+    musicToggle.addEventListener('click', () => {
+      if(bgMusic.paused){
+        bgMusic.play();
+        musicToggle.textContent = 'Müziği Durdur';
+      } else {
+        bgMusic.pause();
+        musicToggle.textContent = 'Müziği Çal';
+      }
+    });
 
     let mode = localStorage.getItem('gun_sayaci_mode') || 'past';
     modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım';
@@ -124,13 +142,13 @@
           daysEl.textContent = days + ' gündür biriz beraberiz'; 
           labelEl.textContent = `${val} tarihinden bu yana`; 
         } else { 
-          daysEl.textContent = '-' + days + 'seninle geçen gün'; 
+          daysEl.textContent = '-' + days + ' seninle geçen gün'; 
           labelEl.textContent = `${val} gelecekte`; 
         }
       } else {
         if(diffMs < 0){ 
           const remainingDays = Math.ceil(absMs / (1000*60*60*24)); 
-          daysEl.textContent = remainingDays + ' gündür kalplerimiz bir atıyor sevgilim                                              -Seni Çokça Seviyorum'; 
+          daysEl.textContent = remainingDays + ' gündür kalplerimiz bir atıyor sevgilim - Seni Çokça Seviyorum'; 
           labelEl.textContent = `${val} tarihine kadar`; 
         } else { 
           daysEl.textContent = '0 gün'; 
@@ -139,7 +157,7 @@
       }
 
       // En altta sadece gün sayısı
-      bottomDays.textContent = days + ' gündür kalplerimiz bir atıyor sevgilim  - -Seni Çokça Seviyorum';
+      bottomDays.textContent = days + ' gündür kalplerimiz bir atıyor sevgilim - Seni Çokça Seviyorum';
     }
 
     setInterval(update, 1000);
