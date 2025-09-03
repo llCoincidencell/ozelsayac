@@ -41,17 +41,11 @@
     header { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
     h1 { font-size: 18px; margin: 0; flex: 1; }
     .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
-    input[type=date] { padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.2); color: inherit; font-size: 14px; max-width: 150px; }
     .btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); padding: 6px 10px; border-radius: 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
-    .btn.primary { background: linear-gradient(90deg,#06b6d4,#3b82f6); color: #041028; border: none; }
     .display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 18px; position: relative; z-index: 2; }
     .big { font-size: clamp(48px, 12vw, 50px); font-weight: 800; line-height: 1; }
     .meta { color: #A020F0; font-size: 14px; margin-top: 6px; }
-    footer { color: #cbd5e1; font-size: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.25); }
-
-    /* En altta sadece geçen gün sayısı */
     #bottomDays { text-align:center; font-size:18px; color:#A020F0; margin-top:10px; }
-
     .particle { position: absolute; font-size: 16px; animation: floatUp 6s linear infinite; user-select: none; pointer-events: none; z-index: 0; }
     @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
 
@@ -63,11 +57,6 @@
     <header>
       <h1>Gün Sayacı</h1>
       <div class="controls">
-        <label for="target">Tarih:</label>
-        <input id="target" type="date" />
-        <button id="modeToggle" class="btn">Mod: Geçen</button>
-        <button id="saveBtn" class="btn">Kaydet</button>
-        <button id="resetBtn" class="btn">Sıfırla</button>
         <!-- Müzik kontrol butonu -->
         <button id="musicToggle" class="btn">Müziği Durdur/Çal</button>
       </div>
@@ -75,33 +64,25 @@
 
     <section class="display" aria-live="polite">
       <div class="big" id="days">—</div>
-      <div class="meta" id="label">Tarih seçin veya kaydedin</div>
+      <div class="meta" id="label">14.08.2023 tarihinden bu yana</div>
     </section>
 
     <!-- En altta sadece geçen gün sayısı -->
     <div id="bottomDays">—</div>
 
     <footer>
-      <div>Kaydedilen: <span id="saved">Yok</span></div>
       <div>v1.2</div>
     </footer>
   </main>
 
   <!-- Arka plan müziği -->
-  <audio id="bgMusic" src="https://radyonet.net/cdn/muzik/azerbaijani-folk-song-nazende-sevgilim-1722359689-17.mp3" autoplay loop></audio>
+  <audio id="bgMusic" src="music/muzik.mp3" autoplay loop></audio>
 
   <script>
-    const targetInput = document.getElementById('target');
     const daysEl = document.getElementById('days');
-    const labelEl = document.getElementById('label');
     const bottomDays = document.getElementById('bottomDays');
-    const modeToggle = document.getElementById('modeToggle');
-    const saveBtn = document.getElementById('saveBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const savedSpan = document.getElementById('saved');
-
-    const bgMusic = document.getElementById('bgMusic');
     const musicToggle = document.getElementById('musicToggle');
+    const bgMusic = document.getElementById('bgMusic');
 
     // Müzik buton işlevi
     musicToggle.addEventListener('click', () => {
@@ -114,80 +95,22 @@
       }
     });
 
-    let mode = localStorage.getItem('gun_sayaci_mode') || 'past';
-    modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım';
-
-    const saved = localStorage.getItem('gun_sayaci_tarih');
-    if(saved){ targetInput.value = saved; savedSpan.textContent = saved; }
-
-    function clearDisplay(){ 
-      daysEl.textContent = '—'; 
-      labelEl.textContent = 'Tarih seçin veya kaydedin'; 
-      bottomDays.textContent = '—';
-    }
+    const startDate = new Date(2023,7,14); // Ay: 0=Ocak, 7=Agustos
 
     function update(){
-      const val = targetInput.value; 
-      if(!val){ clearDisplay(); return }
-      const now = new Date(); 
-      const parts = val.split('-'); 
-      if(parts.length !== 3){ clearDisplay(); return }
-      const chosen = new Date(parts[0], parts[1]-1, parts[2]);
-      const diffMs = now - chosen; 
-      const absMs = Math.abs(diffMs); 
+      const now = new Date();
+      const diffMs = now - startDate;
+      const absMs = Math.abs(diffMs);
       const days = Math.floor(absMs / (1000*60*60*24));
+      const hrs = Math.floor((absMs % (1000*60*60*24)) / (1000*60*60));
+      const mins = Math.floor((absMs % (1000*60*60)) / (1000*60));
+      const secs = Math.floor((absMs % (1000*60)) / 1000);
 
-      if(mode === 'past'){
-        if(diffMs >= 0){ 
-          daysEl.textContent = days + ' gündür biriz beraberiz'; 
-          labelEl.textContent = `${val} tarihinden bu yana`; 
-        } else { 
-          daysEl.textContent = '-' + days + ' seninle geçen gün'; 
-          labelEl.textContent = `${val} gelecekte`; 
-        }
-      } else {
-        if(diffMs < 0){ 
-          const remainingDays = Math.ceil(absMs / (1000*60*60*24)); 
-          daysEl.textContent = remainingDays + ' gündür kalplerimiz bir atıyor sevgilim - Seni Çokça Seviyorum'; 
-          labelEl.textContent = `${val} tarihine kadar`; 
-        } else { 
-          daysEl.textContent = '0 gün'; 
-          labelEl.textContent = `${val} geçmişte`; 
-        }
-      }
-
-      // En altta sadece gün sayısı
-      bottomDays.textContent = days + ' gündür kalplerimiz bir atıyor sevgilim - Seni Çokça Seviyorum';
+      daysEl.textContent = days + ' gündür biriz beraberiz';
+      bottomDays.textContent = `Geçen: ${days}g ${hrs}s ${mins}d ${secs}sn - Seni Çokça Seviyorum`;
     }
 
     setInterval(update, 1000);
-
-    targetInput.addEventListener('change', update);
-    modeToggle.addEventListener('click', () => { 
-      mode = mode === 'past' ? 'future' : 'past'; 
-      localStorage.setItem('gun_sayaci_mode', mode); 
-      modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım'; 
-      update(); 
-    });
-    saveBtn.addEventListener('click', () => { 
-      const v = targetInput.value; 
-      if(!v){ alert('Lütfen önce tarih seçin.'); return } 
-      localStorage.setItem('gun_sayaci_tarih', v); 
-      savedSpan.textContent = v; 
-      alert('Kaydedildi.'); 
-    });
-    resetBtn.addEventListener('click', () => { 
-      if(confirm('Kaydı silmek istiyor musunuz?')){
-        localStorage.removeItem('gun_sayaci_tarih'); 
-        localStorage.removeItem('gun_sayaci_mode'); 
-        targetInput.value = ''; 
-        savedSpan.textContent = 'Yok'; 
-        mode = 'past'; 
-        modeToggle.textContent = 'Mod: Geçen'; 
-        clearDisplay(); 
-      } 
-    });
-
     update();
 
     // Kalp ve kiraz çiçeği animasyonu
