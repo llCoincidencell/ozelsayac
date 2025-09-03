@@ -14,14 +14,14 @@
       padding: 0;
       font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       overflow: hidden;
-}
+    }
 
+    body{
+      background: url('images/anigif.gif') no-repeat center center;
+      background-size: contain;
+      z-index: -1;
+    }
 
-body{
-background: url('images/anigif.gif') no-repeat center center;
-background-size: contain;
-z-index: -1;
-}
     .wrap {
       width: 100%;
       height: 100%;
@@ -53,6 +53,8 @@ z-index: -1;
     .particle { position: absolute; font-size: 16px; animation: floatUp 6s linear infinite; user-select: none; pointer-events: none; z-index: 0; }
     @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
 
+    #bottomDays { text-align:center; font-size:16px; color:#cbd5e1; margin-top:8px; }
+
     @media (max-width:560px) { .display { padding: 12px; } h1 { font-size: 16px; } .controls { gap: 4px; } }
   </style>
 </head>
@@ -72,8 +74,11 @@ z-index: -1;
     <section class="display" aria-live="polite">
       <div class="big" id="days">—</div>
       <div class="meta" id="label">Tarih seçin veya kaydedin</div>
-      <div class="small" id="finalDisplay">—</div>
+      <div class="small" id="timeDetails">—</div>
     </section>
+
+    <!-- En altta sadece geçen gün sayısı -->
+    <div id="bottomDays">—</div>
 
     <footer>
       <div>Kaydedilen: <span id="saved">Yok</span></div>
@@ -86,6 +91,7 @@ z-index: -1;
     const daysEl = document.getElementById('days');
     const labelEl = document.getElementById('label');
     const timeDetails = document.getElementById('timeDetails');
+    const bottomDays = document.getElementById('bottomDays');
     const modeToggle = document.getElementById('modeToggle');
     const saveBtn = document.getElementById('saveBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -97,33 +103,80 @@ z-index: -1;
     const saved = localStorage.getItem('gun_sayaci_tarih');
     if(saved){ targetInput.value = saved; savedSpan.textContent = saved; }
 
-    function clearDisplay(){ daysEl.textContent = '—'; labelEl.textContent = 'Tarih seçin veya kaydedin'; timeDetails.textContent = ''; }
+    function clearDisplay(){ 
+      daysEl.textContent = '—'; 
+      labelEl.textContent = 'Tarih seçin veya kaydedin'; 
+      timeDetails.textContent = ''; 
+      bottomDays.textContent = '—';
+    }
 
     function update(){
-      const val = targetInput.value; if(!val){ clearDisplay(); return }
-      const now = new Date(); const parts = val.split('-'); if(parts.length !== 3){ clearDisplay(); return }
+      const val = targetInput.value; 
+      if(!val){ clearDisplay(); return }
+      const now = new Date(); 
+      const parts = val.split('-'); 
+      if(parts.length !== 3){ clearDisplay(); return }
       const chosen = new Date(parts[0], parts[1]-1, parts[2]);
-      const diffMs = now - chosen; const absMs = Math.abs(diffMs); const days = Math.floor(absMs / (1000*60*60*24));
+      const diffMs = now - chosen; 
+      const absMs = Math.abs(diffMs); 
+      const days = Math.floor(absMs / (1000*60*60*24));
+
       if(mode === 'past'){
-        if(diffMs >= 0){ daysEl.textContent = days + ' gün'; labelEl.textContent = `${val} tarihinden bu yana`; }
-        else { daysEl.textContent = '-' + (days) + ' gün'; labelEl.textContent = `${val} gelecekte`; }
+        if(diffMs >= 0){ 
+          daysEl.textContent = days + ' gün'; 
+          labelEl.textContent = `${val} tarihinden bu yana`; 
+        } else { 
+          daysEl.textContent = '-' + days + ' gün'; 
+          labelEl.textContent = `${val} gelecekte`; 
+        }
       } else {
-        if(diffMs < 0){ const remainingDays = Math.ceil(absMs / (1000*60*60*24)); daysEl.textContent = remainingDays + 'gündür kalplerimiz bir atıyor sevgilim ,Seni Çokça Seviyorum'; labelEl.textContent = `${val} tarihine kadar`; }
-        else { daysEl.textContent = '0 gün'; labelEl.textContent = `${val} geçmişte`; }
+        if(diffMs < 0){ 
+          const remainingDays = Math.ceil(absMs / (1000*60*60*24)); 
+          daysEl.textContent = remainingDays + ' gün'; 
+          labelEl.textContent = `${val} tarihine kadar`; 
+        } else { 
+          daysEl.textContent = '0 gün'; 
+          labelEl.textContent = `${val} geçmişte`; 
+        }
       }
+
       const hrs = Math.floor((absMs % (1000*60*60*24)) / (1000*60*60));
       const mins = Math.floor((absMs % (1000*60*60)) / (1000*60));
       const secs = Math.floor((absMs % (1000*60)) / 1000);
       const prefix = diffMs >= 0 ? 'Geçen: ' : 'Kalan: ';
       timeDetails.textContent = `${prefix}${days}g ${hrs}s ${mins}d ${secs}sn`;
+
+      // En altta sadece gün sayısı
+      bottomDays.textContent = days + ' gün';
     }
 
     setInterval(update, 1000);
 
     targetInput.addEventListener('change', update);
-    modeToggle.addEventListener('click', () => { mode = mode === 'past' ? 'future' : 'past'; localStorage.setItem('gun_sayaci_mode', mode); modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım'; update(); });
-    saveBtn.addEventListener('click', () => { const v = targetInput.value; if(!v){ alert('Lütfen önce tarih seçin.'); return } localStorage.setItem('gun_sayaci_tarih', v); savedSpan.textContent = v; alert('Kaydedildi.'); });
-    resetBtn.addEventListener('click', () => { if(confirm('Kaydı silmek istiyor musunuz?')){ localStorage.removeItem('gun_sayaci_tarih'); localStorage.removeItem('gun_sayaci_mode'); targetInput.value = ''; savedSpan.textContent = 'Yok'; mode = 'past'; modeToggle.textContent = 'Mod: Geçen'; clearDisplay(); } });
+    modeToggle.addEventListener('click', () => { 
+      mode = mode === 'past' ? 'future' : 'past'; 
+      localStorage.setItem('gun_sayaci_mode', mode); 
+      modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım'; 
+      update(); 
+    });
+    saveBtn.addEventListener('click', () => { 
+      const v = targetInput.value; 
+      if(!v){ alert('Lütfen önce tarih seçin.'); return } 
+      localStorage.setItem('gun_sayaci_tarih', v); 
+      savedSpan.textContent = v; 
+      alert('Kaydedildi.'); 
+    });
+    resetBtn.addEventListener('click', () => { 
+      if(confirm('Kaydı silmek istiyor musunuz?')){
+        localStorage.removeItem('gun_sayaci_tarih'); 
+        localStorage.removeItem('gun_sayaci_mode'); 
+        targetInput.value = ''; 
+        savedSpan.textContent = 'Yok'; 
+        mode = 'past'; 
+        modeToggle.textContent = 'Mod: Geçen'; 
+        clearDisplay(); 
+      } 
+    });
 
     update();
 
