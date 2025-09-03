@@ -16,7 +16,7 @@
       overflow: hidden;
     }
 
-    /* Tam ekran GIF arka plan */
+    /* Fotoğraf arka plan, tam sığmasın */
     body::before {
       content: '';
       position: fixed;
@@ -84,7 +84,7 @@
 
     <footer>
       <div>Kaydedilen: <span id="saved">Yok</span></div>
-      <div>v1.3</div>
+      <div>v1.4</div>
     </footer>
   </main>
 
@@ -129,4 +129,22 @@
 
     targetInput.addEventListener('change', update);
     modeToggle.addEventListener('click', () => { mode = mode === 'past' ? 'future' : 'past'; localStorage.setItem('gun_sayaci_mode', mode); modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım'; update(); });
-    saveBtn.addEventListener('click', () => { const v = targetInput.value; if(!v){ alert('Lütfen önce tarih seçin.');
+    saveBtn.addEventListener('click', () => { const v = targetInput.value; if(!v){ alert('Lütfen önce tarih seçin.'); return } localStorage.setItem('gun_sayaci_tarih', v); savedSpan.textContent = v; alert('Kaydedildi.'); });
+    resetBtn.addEventListener('click', () => { if(confirm('Kaydı silmek istiyor musunuz?')){ localStorage.removeItem('gun_sayaci_tarih'); localStorage.removeItem('gun_sayaci_mode'); targetInput.value = ''; savedSpan.textContent = 'Yok'; mode = 'past'; modeToggle.textContent = 'Mod: Geçen'; clearDisplay(); } });
+
+    update();
+
+    const particles = ['❤️','🌸'];
+    function createParticle(){
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.fontSize = (Math.random()*20+10)+'px';
+      particle.textContent = particles[Math.floor(Math.random()*particles.length)];
+      document.body.appendChild(particle);
+      setTimeout(()=>particle.remove(),6000);
+    }
+    setInterval(createParticle,500);
+  </script>
+</body>
+</html>
