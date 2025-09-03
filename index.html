@@ -14,13 +14,21 @@
       padding: 0;
       font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       overflow: hidden;
-    }
+}
 
-    body {
-      background: url('images/anigif.gif') no-repeat center center fixed;
-      background-size: cover;
-    }
 
+/* Fotoğraf arka plan, tam sığmasın */
+body::before {
+content: '';
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background: url('images/anigif.gif') no-repeat center center;
+background-size: contain;
+z-index: -1;
+}
     .wrap {
       width: 100%;
       height: 100%;
