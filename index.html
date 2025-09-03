@@ -16,62 +16,51 @@
       overflow: hidden;
     }
 
-body {
-  background: url('images/anigif.gif') no-repeat center center fixed;
-  background-size: cover;
-}
-
-
-    .wrap{
-      width:100%;
-      height:100%;
-      max-width:860px;
-      margin:0 auto;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      background: rgba(0,0,0,0.3);
-      box-shadow:0 6px 30px rgba(2,6,23,0.6);
-      border-radius:0;
-      padding:20px;
-      box-sizing:border-box;
-      position:relative;
-      z-index:1;
+    /* Tam ekran GIF arka plan */
+    body {
+      background: url('images/anigif.gif') no-repeat center center fixed;
+      background-size: cover;
     }
 
-    header{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
-    h1{font-size:18px;margin:0;flex:1}
-    .controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-    input[type=date]{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;font-size:14px;max-width:140px}
-    .btn{background: rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);padding:6px 10px;border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap}
-    .btn.primary{background:linear-gradient(90deg,#06b6d4,#3b82f6);color:#041028;border:none}
-    .display{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;position:relative;z-index:2}
-    .big{font-size:78px;font-weight:700;line-height:1}
-    .meta{color:#94a3b8;font-size:14px;margin-top:4px}
-    .small{font-size:12px;color:#94a3b8;margin-top:8px}
-    footer{color:#94a3b8;font-size:12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)}
-
-    .particle{
-      position:absolute;
-      font-size:16px;
-      animation:floatUp 6s linear infinite;
-      user-select:none;
-      pointer-events:none;
-      z-index:0;
+    .wrap {
+      width: 100%;
+      height: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(0,0,0,0.35);
+      box-shadow: 0 6px 30px rgba(2,6,23,0.6);
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(2px);
     }
 
-    @keyframes floatUp{
-      0%{transform:translateY(0) scale(1);opacity:1}
-      100%{transform:translateY(-100vh) scale(1.5);opacity:0}
-    }
+    header { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
+    h1 { font-size: 18px; margin: 0; flex: 1; }
+    .controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+    input[type=date] { padding: 6px 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: rgba(0,0,0,0.2); color: inherit; font-size: 14px; max-width: 150px; }
+    .btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); padding: 6px 10px; border-radius: 10px; cursor: pointer; font-size: 13px; white-space: nowrap; }
+    .btn.primary { background: linear-gradient(90deg,#06b6d4,#3b82f6); color: #041028; border: none; }
+    .display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 18px; position: relative; z-index: 2; }
+    .big { font-size: clamp(48px, 12vw, 120px); font-weight: 800; line-height: 1; }
+    .meta { color: #cbd5e1; font-size: 14px; margin-top: 6px; }
+    .small { font-size: 12px; color: #cbd5e1; margin-top: 8px; }
+    footer { color: #cbd5e1; font-size: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.25); }
 
-    @media (max-width:560px){.big{font-size:32px}.display{padding:12px}}
+    .particle { position: absolute; font-size: 16px; animation: floatUp 6s linear infinite; user-select: none; pointer-events: none; z-index: 0; }
+    @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+
+    @media (max-width:560px) { .display { padding: 12px; } h1 { font-size: 16px; } .controls { gap: 4px; } }
   </style>
 </head>
 <body>
   <main class="wrap">
     <header>
-      <h1>Efsun Seray ve Kubilay'ın Birliktelik Sayacı</h1>
+      <h1>Gün Sayacı</h1>
       <div class="controls">
         <label for="target">Tarih:</label>
         <input id="target" type="date" />
@@ -89,7 +78,7 @@ body {
 
     <footer>
       <div>Kaydedilen: <span id="saved">Yok</span></div>
-      <div>v1.0</div>
+      <div>v1.2</div>
     </footer>
   </main>
 
@@ -107,48 +96,22 @@ body {
     modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım';
 
     const saved = localStorage.getItem('gun_sayaci_tarih');
-    if(saved){
-      targetInput.value = saved;
-      savedSpan.textContent = saved;
-    }
+    if(saved){ targetInput.value = saved; savedSpan.textContent = saved; }
 
-    function clearDisplay(){
-      daysEl.textContent = '—';
-      labelEl.textContent = 'Tarih seçin veya kaydedin';
-      timeDetails.textContent = '';
-    }
+    function clearDisplay(){ daysEl.textContent = '—'; labelEl.textContent = 'Tarih seçin veya kaydedin'; timeDetails.textContent = ''; }
 
     function update(){
-      const val = targetInput.value;
-      if(!val){ clearDisplay(); return }
-      const now = new Date();
-      const parts = val.split('-');
-      if(parts.length !== 3){ clearDisplay(); return }
+      const val = targetInput.value; if(!val){ clearDisplay(); return }
+      const now = new Date(); const parts = val.split('-'); if(parts.length !== 3){ clearDisplay(); return }
       const chosen = new Date(parts[0], parts[1]-1, parts[2]);
-
-      const diffMs = now - chosen;
-      const absMs = Math.abs(diffMs);
-      const days = Math.floor(absMs / (1000*60*60*24));
-
+      const diffMs = now - chosen; const absMs = Math.abs(diffMs); const days = Math.floor(absMs / (1000*60*60*24));
       if(mode === 'past'){
-        if(diffMs >= 0){
-          daysEl.textContent = days + ' gündür kalplerimiz bir atıyor sevgilim                                              -Seni Çokça Seviyorum';
-          labelEl.textContent = `${val} tarihinden bu yana`; 
-        } else {
-          daysEl.textContent = '-' + (days) + ' gün';
-          labelEl.textContent = `${val} gelecekte`;
-        }
+        if(diffMs >= 0){ daysEl.textContent = days + ' gün'; labelEl.textContent = `${val} tarihinden bu yana`; }
+        else { daysEl.textContent = '-' + (days) + ' gün'; labelEl.textContent = `${val} gelecekte`; }
       } else {
-        if(diffMs < 0){
-          const remainingDays = Math.ceil(absMs / (1000*60*60*24));
-          daysEl.textContent = remainingDays + ' gün';
-          labelEl.textContent = `${val} tarihine kadar`; 
-        } else {
-          daysEl.textContent = '0 gün';
-          labelEl.textContent = `${val} geçmişte`; 
-        }
+        if(diffMs < 0){ const remainingDays = Math.ceil(absMs / (1000*60*60*24)); daysEl.textContent = remainingDays + ' gün'; labelEl.textContent = `${val} tarihine kadar`; }
+        else { daysEl.textContent = '0 gün'; labelEl.textContent = `${val} geçmişte`; }
       }
-
       const hrs = Math.floor((absMs % (1000*60*60*24)) / (1000*60*60));
       const mins = Math.floor((absMs % (1000*60*60)) / (1000*60));
       const secs = Math.floor((absMs % (1000*60)) / 1000);
@@ -159,45 +122,5 @@ body {
     setInterval(update, 1000);
 
     targetInput.addEventListener('change', update);
-    modeToggle.addEventListener('click', () => {
-      mode = mode === 'past' ? 'future' : 'past';
-      localStorage.setItem('gun_sayaci_mode', mode);
-      modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım';
-      update();
-    });
-    saveBtn.addEventListener('click', () => {
-      const v = targetInput.value;
-      if(!v){ alert('Lütfen önce tarih seçin.'); return }
-      localStorage.setItem('gun_sayaci_tarih', v);
-      savedSpan.textContent = v;
-      alert('Kaydedildi.');
-    });
-    resetBtn.addEventListener('click', () => {
-      if(confirm('Kaydı silmek istiyor musunuz?')){
-        localStorage.removeItem('gun_sayaci_tarih');
-        localStorage.removeItem('gun_sayaci_mode');
-        targetInput.value = '';
-        savedSpan.textContent = 'Yok';
-        mode = 'past';
-        modeToggle.textContent = 'Mod: Geçen';
-        clearDisplay();
-      }
-    });
-
-    update();
-
-    // kalp ve kiraz çiçeği animasyonu
-    const particles = ['❤️', '💖','🌸','🍀 '];
-    function createParticle(){
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      particle.style.left = Math.random() * 100 + 'vw';
-      particle.style.fontSize = (Math.random() * 30 + 20) + 'px';
-      particle.textContent = particles[Math.floor(Math.random() * particles.length)];
-      document.body.appendChild(particle);
-      setTimeout(() => particle.remove(), 6000);
-    }
-    setInterval(createParticle, 500);
-  </script>
-</body>
-</html>
+    modeToggle.addEventListener('click', () => { mode = mode === 'past' ? 'future' : 'past'; localStorage.setItem('gun_sayaci_mode', mode); modeToggle.textContent = mode === 'past' ? 'Mod: Geçen' : 'Mod: Geri Sayım'; update(); });
+    saveBtn.addEventListener('click', () => { const v = targetInput.value; if(!v){ alert('Lütfen önce tarih seçin.'); return } localStorage.setItem('gun_s
